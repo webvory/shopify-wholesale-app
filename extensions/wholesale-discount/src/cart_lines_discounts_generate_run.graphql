@@ -1,0 +1,28 @@
+query RunInput {
+  cart {
+    lines {
+      id
+      quantity
+      merchandise {
+        ... on ProductVariant {
+          id
+        }
+      }
+    }
+
+    buyerIdentity {
+      customer {
+    wholesale: hasAnyTag(tags: ["wholesale"])
+    vip: hasAnyTag(tags: ["vip"])
+    distributor: hasAnyTag(tags: ["distributor"])
+      }
+    }
+  }
+
+  discount {
+    discountClasses
+      metafield(namespace: "discount", key: "config") {  # ✅ THIS is correct for your type
+      value
+    }
+  }
+}

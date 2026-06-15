@@ -1,0 +1,19 @@
+query CartValidationsGenerateRunInput {
+  buyerJourney {
+    step
+  }
+  cart {
+    buyerIdentity {
+      customer {
+        id
+        numberOfOrders
+        min_quantity: metafield(namespace: "wholesale_engine", key: "min_quantity") {
+          value
+        }
+      }
+    }
+    lines {
+      quantity
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 client_id = "1df52932fce3b08b960ab66ca4ccd8c9"
 name = "Wholesale Engine AI"
-application_url = "https://jamie-growth-equivalent-busy.trycloudflare.com"
+application_url = "https://wholesale.webvory.com"
 embedded = true
 handle = "product-customizer-23"
 
@@ -31,7 +31,7 @@ optional_scopes = [ ]
 
 [auth]
 redirect_urls = [
-  "https://jamie-growth-equivalent-busy.trycloudflare.com/api/auth/callback"
+  "https://wholesale.webvory.com/api/auth/callback"
 ]
 
 [product.metafields.app.demo_info]

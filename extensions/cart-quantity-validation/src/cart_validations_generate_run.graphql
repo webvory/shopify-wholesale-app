@@ -1,4 +1,9 @@
 query CartValidationsGenerateRunInput {
+  shop {
+    errorMessages: metafield(namespace: "wholesale_engine", key: "error_messages") {
+      value
+    }
+  }
   buyerJourney {
     step
   }

@@ -12,9 +12,13 @@ query RunInput {
 
     buyerIdentity {
       customer {
-    wholesale: hasAnyTag(tags: ["wholesale"])
-    vip: hasAnyTag(tags: ["vip"])
-    distributor: hasAnyTag(tags: ["distributor"])
+        bronze: hasAnyTag(tags: ["wholesale-bronze"])
+        silver: hasAnyTag(tags: ["wholesale-silver"])
+        gold: hasAnyTag(tags: ["wholesale-gold"])
+        platinum: hasAnyTag(tags: ["wholesale-platinum"])
+        distributor: hasAnyTag(tags: ["distributor"])
+        vip: hasAnyTag(tags: ["vip", "vip-wholesale"])
+        wholesale: hasAnyTag(tags: ["wholesale"])
       }
     }
   }

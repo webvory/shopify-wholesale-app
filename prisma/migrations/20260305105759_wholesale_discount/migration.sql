@@ -1,8 +1,0 @@
--- CreateTable
-CREATE TABLE "WholesaleDiscount" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "shop" TEXT NOT NULL,
-    "tag" TEXT NOT NULL,
-    "discount" INTEGER NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);

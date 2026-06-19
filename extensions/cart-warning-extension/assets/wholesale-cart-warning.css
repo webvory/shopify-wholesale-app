@@ -1,0 +1,28 @@
+.wholesale-engine-cart-warning {
+  background-color: #fce8e8;
+  color: #d12323;
+  padding: 12px 20px;
+  border: 1px solid #d12323;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: none;
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.wholesale-engine-cart-warning.is-visible {
+  display: block;
+}
+
+/* Optional: disabled state for checkout buttons */
+button[name="checkout"]:disabled, 
+a[href="/checkout"][disabled] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}

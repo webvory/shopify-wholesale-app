@@ -1,0 +1,42 @@
+<script>
+  console.log("Wholesale Engine App Embed Loaded.");
+</script>
+
+{% assign min_quantity = 1 %}
+{% assign is_new_customer = false %}
+
+{% if customer %}
+  {% if customer.orders_count == 0 %}
+    {% assign min_quantity = 6 %}
+    {% assign is_new_customer = true %}
+  {% else %}
+    {% if customer.metafields.wholesale_engine.min_quantity %}
+      {% assign min_quantity = customer.metafields.wholesale_engine.min_quantity.value | plus: 0 %}
+    {% endif %}
+  {% endif %}
+{% else %}
+  {% assign min_quantity = 6 %}
+  {% assign is_new_customer = true %}
+{% endif %}
+
+{% if min_quantity > 1 %}
+  <script>
+    window.wholesaleEngineConfig = {
+      minQuantity: {{ min_quantity }},
+      currentCartCount: {{ cart.item_count | default: 0 }},
+      errorMessagesRaw: {{ shop.metafields.wholesale_engine.error_messages.value | json }},
+      isNewCustomer: {{ is_new_customer }}
+    };
+    console.log("Wholesale Engine Config injected:", window.wholesaleEngineConfig);
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Wholesale Cart Warning",
+  "target": "body",
+  "stylesheet": "wholesale-cart-warning.css",
+  "javascript": "wholesale-cart-warning.js",
+  "settings": []
+}
+{% endschema %}

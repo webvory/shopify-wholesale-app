@@ -10,7 +10,7 @@ export function cartLinesDiscountsGenerateRun(input: any) {
   STEP 1: Read config from metafield
   */
   const config = JSON.parse(
-    input?.discountNode?.metafield?.value || "{}"
+    input?.discount?.metafield?.value || "{}"
   );
 
   /*
@@ -18,49 +18,76 @@ export function cartLinesDiscountsGenerateRun(input: any) {
   */
   const customer = input.cart?.buyerIdentity?.customer;
 
-  const isWholesale = customer?.wholesale;
-  const isVIP = customer?.vip;
-
-  /*
-  STEP 3: Decide discount %
-  */
-  let percentage = 0;
-
-  if (isVIP) {
-    percentage = config.vip || 0;
-  } else if (isWholesale) {
-    percentage = config.wholesale || 0;
-  }
-
-  /*
-  STEP 4: If no discount → return empty
-  */
-  if (!percentage) {
+  if (!customer) {
     return {
-      discountApplicationStrategy: "FIRST",
-      discounts: [],
+      operations: []
     };
   }
 
   /*
-  STEP 5: Apply to all cart lines
+  STEP 3: Map GraphQL flags to possible tag names
+  */
+  const potentialTags = [];
+  if (customer.bronze) potentialTags.push("wholesale-bronze");
+  if (customer.silver) potentialTags.push("wholesale-silver");
+  if (customer.gold) potentialTags.push("wholesale-gold");
+  if (customer.platinum) potentialTags.push("wholesale-platinum");
+  if (customer.distributor) potentialTags.push("distributor");
+  if (customer.vip) {
+    potentialTags.push("vip");
+    potentialTags.push("vip-wholesale");
+  }
+  if (customer.wholesale) potentialTags.push("wholesale");
+
+  /*
+  STEP 4: Find the maximum discount % matching the customer's tags
+  */
+  let percentage = 0;
+
+  for (const tag of potentialTags) {
+    if (config[tag]) {
+      const val = Number(config[tag]);
+      if (val > percentage) {
+        percentage = val;
+      }
+    }
+  }
+
+  /*
+  STEP 5: If no discount → return empty
+  */
+  if (!percentage) {
+    return {
+      operations: []
+    };
+  }
+
+  /*
+  STEP 6: Apply to all cart lines
   */
   const targets = input.cart.lines.map((line: any) => ({
-    productVariant: {
-      id: line.merchandise.id,
+    cartLine: {
+      id: line.id,
+      quantity: line.quantity
     },
   }));
 
   return {
-    discountApplicationStrategy: "FIRST",
-    discounts: [
+    operations: [
       {
-        message: `${percentage}% OFF`,
-        targets,
-        value: {
-          percentage: {
-            value: percentage,
-          },
+        productDiscountsAdd: {
+          candidates: [
+            {
+              message: `${percentage}% OFF`,
+              targets: targets,
+              value: {
+                percentage: {
+                  value: percentage,
+                },
+              },
+            },
+          ],
+          selectionStrategy: "FIRST",
         },
       },
     ],

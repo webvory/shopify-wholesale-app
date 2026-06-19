@@ -1,0 +1,7 @@
+api_version = "2024-04"
+
+[[extensions]]
+type = "theme"
+name = "cart-warning-extension"
+handle = "cart-warning-extension"
+uid = "94ee609a-9194-195b-c2fb-2bd1eac44d06a1e74b85"

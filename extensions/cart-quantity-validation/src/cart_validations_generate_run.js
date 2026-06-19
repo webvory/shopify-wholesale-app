@@ -36,9 +36,41 @@ export function cartValidationsGenerateRun(input) {
   // If the total quantity in the cart is less than the required minimum, block the action
   if (totalQuantity < minQuantity) {
     if (input.buyerJourney?.step !== "CART_INTERACTION") {
-      const errorMessage = isNewCustomer 
-        ? `As a new customer, you must order at least ${minQuantity} items. You currently have ${totalQuantity} items in your cart.`
-        : `Based on your customer tags, you must order at least ${minQuantity} items. You currently have ${totalQuantity} items in your cart.`;
+      
+      // Parse custom messages if available
+      let customNewCustomerMsg = "";
+      let customTaggedCustomerMsg = "";
+      
+      if (input.shop?.errorMessages?.value) {
+        try {
+          const parsed = JSON.parse(input.shop.errorMessages.value);
+          customNewCustomerMsg = parsed.newCustomerMessage || "";
+          customTaggedCustomerMsg = parsed.taggedCustomerMessage || "";
+        } catch (e) {
+          // Ignore parsing errors
+        }
+      }
+
+      // Format the message
+      let errorMessage = "";
+      
+      if (isNewCustomer) {
+        if (customNewCustomerMsg) {
+          errorMessage = customNewCustomerMsg
+            .replace(/{limit}/g, minQuantity.toString())
+            .replace(/{total}/g, totalQuantity.toString());
+        } else {
+          errorMessage = `As a new customer, you must order at least ${minQuantity} items. You currently have ${totalQuantity} items in your cart.`;
+        }
+      } else {
+        if (customTaggedCustomerMsg) {
+          errorMessage = customTaggedCustomerMsg
+            .replace(/{limit}/g, minQuantity.toString())
+            .replace(/{total}/g, totalQuantity.toString());
+        } else {
+          errorMessage = `Based on your customer tags, you must order at least ${minQuantity} items. You currently have ${totalQuantity} items in your cart.`;
+        }
+      }
 
       errors.push({
         message: errorMessage,

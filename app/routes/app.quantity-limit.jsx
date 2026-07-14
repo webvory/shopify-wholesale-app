@@ -178,7 +178,6 @@ async function syncCustomersWithTag(admin, targetTag, allLimits) {
 
 function LimitRow({ tag, currentLimit }) {
   const fetcher = useFetcher();
-  // Ensure we display an empty string if currentLimit is undefined/null
   const [limit, setLimit] = useState(currentLimit !== undefined ? currentLimit : "");
 
   const isSubmitting = fetcher.state !== "idle";
@@ -192,38 +191,39 @@ function LimitRow({ tag, currentLimit }) {
   };
 
   return (
-    <tr style={{ borderBottom: "1px solid #ebebeb", background: "#fff", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = '#f4f6f8'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-      <td style={{ padding: "12px 16px", fontWeight: "500", color: "#202223" }}>
-        <span style={{ display: "inline-block", background: "#e4e5e7", padding: "4px 10px", borderRadius: "12px", fontSize: "13px" }}>
+    <tr>
+      <td>
+        <span className="lx-tag" style={{ display: "inline-flex", width: "fit-content" }}>
           {tag}
         </span>
       </td>
-      <td style={{ padding: "12px 16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <td>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <input 
             type="number"
             min="0"
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
             placeholder="No limit"
-            style={{ width: "120px", padding: "6px 8px", border: "1px solid #c9cccf", borderRadius: "4px", fontSize: "13px", outline: "none" }}
+            className="lx-input"
+            style={{ width: "140px", padding: "8px 12px", height: "36px", fontSize: "0.85rem" }}
           />
           <button 
             onClick={handleSave}
             disabled={isSubmitting || !hasChanged}
+            className="lx-button"
             style={{ 
-              padding: "6px 12px", 
-              background: !hasChanged ? "#f4f6f8" : "#005bd3", 
-              color: !hasChanged ? "#8c9196" : "#fff", 
-              border: !hasChanged ? "1px solid #c9cccf" : "1px solid #005bd3", 
-              borderRadius: "4px", 
-              cursor: !hasChanged ? "not-allowed" : "pointer", 
-              fontWeight: "500", 
-              fontSize: "13px",
-              minWidth: "70px"
+              padding: "0 16px",
+              height: "36px",
+              fontSize: "0.85rem",
+              background: !hasChanged ? "#E5E7EB" : "#000000",
+              borderColor: !hasChanged ? "#E5E7EB" : "#000000",
+              color: !hasChanged ? "#9CA3AF" : "#FFFFFF",
+              transform: "none",
+              boxShadow: "none"
             }}
           >
-            {isSubmitting ? "..." : "Save"}
+            {isSubmitting ? "Saving..." : "Save"}
           </button>
         </div>
       </td>
@@ -249,60 +249,75 @@ export default function QuantityLimitPage() {
 
   return (
     <s-page heading="Quantity Limits">
-      <div style={{ background: "#fff", borderRadius: "8px", boxShadow: "0 0 0 1px rgba(0,0,0,0.05), 0 1px 3px 0 rgba(0,0,0,0.15)", overflow: "hidden", margin: "16px 0" }}>
-        <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb", background: "#fafbfb" }}>
-          <p style={{ color: "#6d7175", margin: 0, fontSize: "14px", marginBottom: "16px" }}>Set maximum purchase quantities based on customer tags.</p>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fff", border: "1px solid #c9cccf", borderRadius: "4px", padding: "6px 12px" }}>
-            <svg viewBox="0 0 20 20" style={{ width: "16px", height: "16px", fill: "#8c9196" }}><path d="M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12zm6.32-1.094l3.58 3.58a1 1 0 1 1-1.414 1.414l-3.58-3.58a8 8 0 1 1 1.414-1.414z"/></svg>
-            <input 
-              type="text"
-              placeholder="Search tags..." 
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              style={{ border: "none", outline: "none", width: "100%", background: "transparent", fontSize: "14px", color: "#202223" }} 
-            />
+      <div className="lx-container">
+        <header className="lx-header">
+          <h1 className="lx-title">Quantity Limits</h1>
+          <p className="lx-subtitle">Set maximum purchase quantities based on customer tags.</p>
+        </header>
+
+        <div className="lx-table-container">
+          <div className="lx-search-bar">
+            <div style={{ fontWeight: "600", color: "var(--lx-text-primary)", whiteSpace: "nowrap" }}>
+              Customer Tags
+            </div>
+            <div style={{ width: "1px", height: "24px", background: "var(--lx-border)", margin: "0 8px" }}></div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+              <svg viewBox="0 0 20 20" style={{ width: "18px", height: "18px", fill: "#9CA3AF" }}><path d="M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12zm6.32-1.094l3.58 3.58a1 1 0 1 1-1.414 1.414l-3.58-3.58a8 8 0 1 1 1.414-1.414z"/></svg>
+              <input 
+                type="text"
+                placeholder="Search tags..." 
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="lx-search-input"
+              />
+            </div>
           </div>
-        </div>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-            <thead style={{ background: "#fafbfb", borderBottom: "1px solid #ebebeb" }}>
-              <tr>
-                <th style={{ padding: "10px 16px", fontWeight: "600", color: "#6d7175", fontSize: "13px", width: "50%" }}>Customer Tag</th>
-                <th style={{ padding: "10px 16px", fontWeight: "600", color: "#6d7175", fontSize: "13px", width: "50%" }}>Quantity Limit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentTags.length === 0 ? (
+
+          <div style={{ overflowX: "auto" }}>
+            <table className="lx-table">
+              <thead>
                 <tr>
-                  <td colSpan="2" style={{ padding: "32px", textAlign: "center", color: "#6d7175" }}>No tags found in the system.</td>
+                  <th style={{ width: "50%" }}>Customer Tag</th>
+                  <th style={{ width: "50%" }}>Quantity Limit</th>
                 </tr>
-              ) : (
-                currentTags.map(tag => (
-                  <LimitRow key={tag} tag={tag} currentLimit={limitsMap[tag]} />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        
-        <div style={{ padding: "16px", display: "flex", justifyContent: "center", gap: "12px", borderTop: "1px solid #ebebeb", background: "#fff" }}>
-          <button 
-            disabled={currentPage === 1} 
-            onClick={() => setCurrentPage(p => p - 1)}
-            style={{ padding: "6px 12px", background: "#fff", border: "1px solid #c9cccf", borderRadius: "4px", color: "#202223", fontWeight: "500", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.5 : 1 }}
-          >
-            Previous
-          </button>
-          <span style={{ display: "flex", alignItems: "center", fontSize: "13px", color: "#6d7175", fontWeight: "500" }}>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button 
-            disabled={currentPage === totalPages} 
-            onClick={() => setCurrentPage(p => p + 1)}
-            style={{ padding: "6px 12px", background: "#fff", border: "1px solid #c9cccf", borderRadius: "4px", color: "#202223", fontWeight: "500", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.5 : 1 }}
-          >
-            Next
-          </button>
+              </thead>
+              <tbody>
+                {currentTags.length === 0 ? (
+                  <tr>
+                    <td colSpan="2" style={{ padding: "48px", textAlign: "center", color: "#6B7280" }}>
+                      <div style={{ fontSize: "1rem", fontWeight: "500", marginBottom: "8px" }}>No tags found in the system.</div>
+                    </td>
+                  </tr>
+                ) : (
+                  currentTags.map(tag => (
+                    <LimitRow key={tag} tag={tag} currentLimit={limitsMap[tag]} />
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          <div style={{ padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--lx-border)", background: "#fff" }}>
+            <span style={{ fontSize: "0.85rem", color: "#6B7280", fontWeight: "500" }}>
+              Page {currentPage} of {totalPages}
+            </span>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button 
+                disabled={currentPage === 1} 
+                onClick={() => setCurrentPage(p => p - 1)}
+                className="lx-btn-outline"
+              >
+                Previous
+              </button>
+              <button 
+                disabled={currentPage === totalPages} 
+                onClick={() => setCurrentPage(p => p + 1)}
+                className="lx-btn-outline"
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </s-page>

@@ -114,37 +114,48 @@ export default function CreateDiscount() {
 
   return (
     <s-page heading="Wholesale Discount Engine">
-      <s-section heading="Master Control">
-        <s-paragraph>
-          This is the master switch for your background discount engine. The engine applies automatic percentage discounts to customer carts based on their tags.
-        </s-paragraph>
-        <br />
-        <s-banner tone="info">
-          <strong>Need to change percentages or add new tags?</strong>
-          <br/>
-          Go to the "Discounts" page in your app menu to manage dynamic tag rules (Bronze, Silver, Gold, etc.).
-        </s-banner>
-      </s-section>
+      <div className="lx-container" style={{ maxWidth: "800px" }}>
+        <header className="lx-header">
+          <h1 className="lx-title">Discount Engine</h1>
+          <p className="lx-subtitle">Master switch for your background discount engine.</p>
+        </header>
 
-      <s-section heading="Engine Status">
-        {discounts.length === 0 ? (
-          <s-banner tone="warning">
-            The discount engine is currently completely disabled. To activate it, go to the "Discounts" page and create your first discount rule. The engine will be automatically created and synced.
-          </s-banner>
-        ) : (
-          discounts.map((d) => (
-            <s-card key={d.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="lx-card" style={{ padding: "2.5rem", marginBottom: "2rem" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <h2 className="lx-card-title" style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Engine Status</h2>
+            <p className="lx-subtitle" style={{ margin: "0", fontSize: "0.95rem" }}>
+              The engine applies automatic percentage discounts to customer carts based on their tags.
+            </p>
+          </div>
+          
+          <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: "8px", padding: "16px", marginBottom: "2rem" }}>
+            <p style={{ margin: 0, color: "#1D4ED8", fontSize: "0.9rem" }}>
+              <strong>Need to change percentages or add new tags?</strong><br />
+              Go to the "Discounts" page in your app menu to manage dynamic tag rules (Bronze, Silver, Gold, etc.).
+            </p>
+          </div>
+
+          {discounts.length === 0 ? (
+            <div style={{ background: "#FEF3C7", border: "1px solid #FDE68A", borderRadius: "8px", padding: "16px" }}>
+              <p style={{ margin: 0, color: "#92400E", fontSize: "0.95rem", fontWeight: "500" }}>
+                The discount engine is currently disabled. To activate it, go to the "Discounts" page and create your first discount rule. The engine will be automatically created and synced.
+              </p>
+            </div>
+          ) : (
+            discounts.map((d) => (
+              <div key={d.id} style={{ border: "1px solid var(--lx-border)", borderRadius: "8px", padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <s-text><strong>{d.discount.title}</strong></s-text>
-                  <br />
-                  <s-badge tone={d.discount.status === "ACTIVE" ? "success" : "critical"}>
+                  <h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "var(--lx-text-primary)", margin: "0 0 0.5rem 0" }}>
+                    {d.discount.title}
+                  </h3>
+                  <span className={`lx-badge ${d.discount.status === "ACTIVE" ? "lx-badge-success" : "lx-badge-info"}`}>
                     {d.discount.status}
-                  </s-badge>
+                  </span>
                 </div>
 
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <s-button
+                  <button
+                    className="lx-btn-outline"
                     onClick={() =>
                       fetcher.submit(
                         { id: d.id, actionType: d.discount.status === "ACTIVE" ? "pause" : "resume" },
@@ -153,10 +164,11 @@ export default function CreateDiscount() {
                     }
                   >
                     {d.discount.status === "ACTIVE" ? "Pause Engine" : "Resume Engine"}
-                  </s-button>
+                  </button>
 
-                  <s-button
-                    tone="critical"
+                  <button
+                    className="lx-button lx-button-danger"
+                    style={{ padding: "0.5rem 1.25rem" }}
                     onClick={() =>
                       fetcher.submit(
                         { id: d.id, actionType: "delete" },
@@ -165,13 +177,13 @@ export default function CreateDiscount() {
                     }
                   >
                     Delete Completely
-                  </s-button>
+                  </button>
                 </div>
               </div>
-            </s-card>
-          ))
-        )}
-      </s-section>
+            ))
+          )}
+        </div>
+      </div>
     </s-page>
   );
 }

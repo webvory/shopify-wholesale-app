@@ -220,80 +220,96 @@ export default function Discounts() {
 
   return (
     <s-page heading="Wholesale Discount Rules">
-      <s-section heading="Manage Dynamic Discounts">
-        <s-paragraph>
-          Create discount percentages for specific customer tags. These rules are automatically synced to the Shopify Background Discount Engine.
-        </s-paragraph>
-        
-        <div style={{
-          display: "flex",
-          gap: "15px",
-          alignItems: "flex-end",
-          background: "#f9f9f9",
-          padding: "20px",
-          borderRadius: "8px",
-          border: "1px solid #e1e3e5",
-          marginTop: "16px",
-          flexWrap: "wrap"
-        }}>
-          <div style={{ flex: 1, minWidth: "200px" }}>
-            <s-text-field
-              label="Customer Tag"
-              value={tag}
-              onInput={(e) => setTag(e.target.value)}
-              placeholder="e.g. wholesale-gold"
-            />
-          </div>
-          <div style={{ flex: 1, minWidth: "150px" }}>
-            <s-text-field
-              label="Discount %"
-              type="number"
-              value={discount}
-              onInput={(e) => setDiscount(e.target.value)}
-              placeholder="e.g. 20"
-            />
-          </div>
-          <div style={{ paddingBottom: "2px" }}>
-            <s-button variant="primary" onClick={createRule} loading={isCreating}>
-              Save Rule
-            </s-button>
-          </div>
-        </div>
-      </s-section>
+      <div className="lx-container">
+        <header className="lx-header">
+          <h1 className="lx-title">Discount Rules</h1>
+          <p className="lx-subtitle">Create discount percentages for specific customer tags.</p>
+        </header>
 
-      <s-section heading="Active Tag Rules">
-        {rules.length === 0 && <s-paragraph>No rules configured yet.</s-paragraph>}
+        <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: '1fr' }}>
+          
+          {/* Create Rule Form */}
+          <div className="lx-card" style={{ padding: '2.5rem' }}>
+            <h2 className="lx-card-title" style={{ marginBottom: '2rem', fontSize: '1.5rem' }}>Create New Discount</h2>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+              <div className="lx-form-group">
+                <label className="lx-label">Customer Tag</label>
+                <input 
+                  type="text" 
+                  className="lx-input" 
+                  placeholder="e.g. VIP"
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value)}
+                />
+              </div>
 
-        {rules.length > 0 && (
-          <div style={{ background: "white", border: "1px solid #e1e3e5", borderRadius: "8px", overflow: "hidden", marginTop: "16px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-              <thead>
-                <tr style={{ background: "#f4f6f8", borderBottom: "1px solid #e1e3e5" }}>
-                  <th style={{ padding: "14px 20px", fontWeight: "600", color: "#202223" }}>Customer Tag</th>
-                  <th style={{ padding: "14px 20px", fontWeight: "600", color: "#202223" }}>Discount</th>
-                  <th style={{ padding: "14px 20px", textAlign: "right", fontWeight: "600", color: "#202223" }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
+              <div className="lx-form-group">
+                <label className="lx-label">Discount %</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type="number" 
+                    className="lx-input" 
+                    placeholder="20"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                  />
+                  <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#6B7280', fontWeight: '500' }}>
+                    % OFF
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--lx-border)', paddingTop: '1.5rem' }}>
+              <button 
+                className="lx-button" 
+                onClick={createRule}
+                disabled={isCreating}
+                style={{ opacity: isCreating ? 0.7 : 1 }}
+              >
+                {isCreating ? "Saving..." : "Save Discount Rule"}
+              </button>
+            </div>
+          </div>
+
+          {/* Rules List */}
+          <div>
+            <h2 className="lx-card-title" style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Active Tag Rules</h2>
+            
+            {rules.length === 0 ? (
+              <div className="lx-card" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#6B7280' }}>
+                No discount rules configured yet.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {rules.map((rule) => {
                   const isDeletingThis = fetcher.state === "submitting" && fetcher.formData?.get("actionType") === "delete" && fetcher.formData?.get("id") === rule.id.toString();
                   return (
-                    <tr key={rule.id} style={{ borderBottom: "1px solid #e1e3e5" }}>
-                      <td style={{ padding: "16px 20px", fontWeight: "500", color: "#202223" }}>{rule.tag}</td>
-                      <td style={{ padding: "16px 20px" }}>
-                        <s-badge>{rule.discount}% OFF</s-badge>
-                      </td>
-                      <td style={{ padding: "16px 20px", textAlign: "right" }}>
-                        <s-button tone="critical" onClick={() => deleteRule(rule.id)} loading={isDeletingThis}>Delete</s-button>
-                      </td>
-                    </tr>
+                    <div key={rule.id} className="lx-rule-card">
+                      <div className="lx-rule-info">
+                        <div>
+                          <h3 className="lx-rule-name">For "{rule.tag}" tags</h3>
+                        </div>
+                        <span className="lx-badge lx-badge-success">{rule.discount}% OFF</span>
+                      </div>
+                      
+                      <button 
+                        className="lx-button lx-button-danger" 
+                        onClick={() => deleteRule(rule.id)}
+                        disabled={isDeletingThis}
+                        style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+                      >
+                        {isDeletingThis ? "..." : "Delete"}
+                      </button>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
+              </div>
+            )}
           </div>
-        )}
-      </s-section>
+        </div>
+      </div>
     </s-page>
   );
 }

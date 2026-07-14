@@ -101,64 +101,60 @@ export default function Settings() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-      <h1 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "20px", color: "#202223" }}>Settings</h1>
+    <s-page heading="App Settings">
+      <div className="lx-container" style={{ maxWidth: "800px" }}>
+        <header className="lx-header">
+          <h1 className="lx-title">App Settings</h1>
+          <p className="lx-subtitle">Configure global app settings and checkout validation messages.</p>
+        </header>
 
-      <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0 0 0 1px rgba(63, 63, 68, 0.05), 0 1px 3px 0 rgba(63, 63, 68, 0.15)" }}>
-        <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "8px", color: "#202223" }}>Checkout Validation Error Messages</h2>
-        <p style={{ color: "#6d7175", marginBottom: "20px", fontSize: "14px" }}>
-          Customize the warning messages shown to customers when they don't meet the minimum quantity rules. 
-          Use <strong>{'{limit}'}</strong> to show the required quantity and <strong>{'{total}'}</strong> to show their current cart quantity.
-        </p>
-        
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", color: "#202223", fontSize: "14px" }}>
-            New Customer Error Message
-          </label>
-          <textarea
-            value={newCustomerMessage}
-            onChange={(e) => setNewCustomerMessage(e.target.value)}
-            rows={3}
-            placeholder="As a new customer, you must order at least {limit} items. You currently have {total} items."
-            style={{ width: "100%", padding: "10px", border: "1px solid #c9cccf", borderRadius: "4px", fontSize: "14px", outline: "none", resize: "vertical" }}
-          />
-          <p style={{ color: "#6d7175", marginTop: "4px", fontSize: "13px" }}>Leave blank to use the default message.</p>
-        </div>
+        <div className="lx-card" style={{ padding: "2.5rem" }}>
+          <div style={{ marginBottom: "2rem" }}>
+            <h2 className="lx-card-title" style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Checkout Error Messages</h2>
+            <p className="lx-subtitle" style={{ margin: "0", fontSize: "0.95rem" }}>
+              Customize the warning messages shown to customers when they don't meet the minimum quantity rules. 
+              Use <strong>{'{limit}'}</strong> to show the required quantity and <strong>{'{total}'}</strong> to show their current cart quantity.
+            </p>
+          </div>
+          
+          <div className="lx-form-group">
+            <label className="lx-label">New Customer Error Message</label>
+            <textarea
+              className="lx-input"
+              value={newCustomerMessage}
+              onChange={(e) => setNewCustomerMessage(e.target.value)}
+              rows={3}
+              placeholder="As a new customer, you must order at least {limit} items. You currently have {total} items."
+              style={{ resize: "vertical", fontFamily: "inherit" }}
+            />
+            <p style={{ color: "#6B7280", marginTop: "6px", fontSize: "0.85rem", fontWeight: "500" }}>Leave blank to use the default message.</p>
+          </div>
 
-        <div style={{ marginBottom: "24px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", color: "#202223", fontSize: "14px" }}>
-            Tagged Customer Error Message
-          </label>
-          <textarea
-            value={taggedCustomerMessage}
-            onChange={(e) => setTaggedCustomerMessage(e.target.value)}
-            rows={3}
-            placeholder="Based on your tags, you must order at least {limit} items. You currently have {total} items."
-            style={{ width: "100%", padding: "10px", border: "1px solid #c9cccf", borderRadius: "4px", fontSize: "14px", outline: "none", resize: "vertical" }}
-          />
-          <p style={{ color: "#6d7175", marginTop: "4px", fontSize: "13px" }}>Leave blank to use the default message.</p>
-        </div>
+          <div className="lx-form-group" style={{ marginBottom: "2.5rem" }}>
+            <label className="lx-label">Tagged Customer Error Message</label>
+            <textarea
+              className="lx-input"
+              value={taggedCustomerMessage}
+              onChange={(e) => setTaggedCustomerMessage(e.target.value)}
+              rows={3}
+              placeholder="Based on your tags, you must order at least {limit} items. You currently have {total} items."
+              style={{ resize: "vertical", fontFamily: "inherit" }}
+            />
+            <p style={{ color: "#6B7280", marginTop: "6px", fontSize: "0.85rem", fontWeight: "500" }}>Leave blank to use the default message.</p>
+          </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button 
-            onClick={handleSave} 
-            disabled={isSaving}
-            style={{ 
-              padding: "8px 16px", 
-              background: "#005bd3", 
-              color: "#fff", 
-              border: "1px solid #005bd3", 
-              borderRadius: "4px", 
-              cursor: isSaving ? "not-allowed" : "pointer", 
-              fontWeight: "500", 
-              fontSize: "14px",
-              opacity: isSaving ? 0.7 : 1
-            }}
-          >
-            {isSaving ? "Saving..." : "Save Settings"}
-          </button>
+          <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid var(--lx-border)", paddingTop: "1.5rem", marginTop: "1rem" }}>
+            <button 
+              onClick={handleSave} 
+              disabled={isSaving}
+              className="lx-button"
+              style={{ opacity: isSaving ? 0.7 : 1 }}
+            >
+              {isSaving ? "Saving..." : "Save Settings"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </s-page>
   );
 }

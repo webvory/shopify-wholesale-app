@@ -2,7 +2,7 @@
 
 client_id = "1df52932fce3b08b960ab66ca4ccd8c9"
 name = "Wholesale Engine AI"
-application_url = "https://data-retro-catherine-nor.trycloudflare.com"
+application_url = "https://wholesale.webvory.com"
 embedded = true
 handle = "product-customizer-23"
 
@@ -26,12 +26,12 @@ api_version = "2025-04"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_customers,read_discounts,read_markets,read_metaobject_definitions,read_metaobjects,read_orders,read_price_rules,read_products,read_script_tags,read_shipping,write_customers,write_discounts,write_markets,write_metaobject_definitions,write_metaobjects,write_price_rules,write_products,write_script_tags,write_shipping"
+scopes = "read_customers,read_discounts,read_markets,read_metaobject_definitions,read_metaobjects,read_orders,read_price_rules,read_products,read_script_tags,read_shipping,write_customers,write_discounts,write_markets,write_metaobject_definitions,write_metaobjects,write_price_rules,write_products,write_script_tags,write_shipping,write_online_store_navigation "
 optional_scopes = [ ]
 
 [auth]
 redirect_urls = [
-  "https://data-retro-catherine-nor.trycloudflare.com/api/auth/callback"
+  "https://wholesale.webvory.com/api/auth/callback"
 ]
 
 [product.metafields.app.demo_info]
@@ -57,3 +57,8 @@ required = true
 [metaobjects.app.example.fields.description]
 name = "Description"
 type = "multi_line_text_field"
+
+[app_proxy]
+url = "https://wholesale.webvory.com/api/proxy"
+subpath = "wholesale"
+prefix = "apps"

@@ -1,5 +1,71 @@
 import { Link } from "react-router";
+import { authenticate } from "../shopify.server";
+import prisma from "../db.server";
 
+export const loader = async ({ request }) => {
+  const { admin, session } = await authenticate.admin(request);
+  
+  // 1. Check if we already created the menu
+  let settings = await prisma.appSetting.findUnique({
+    where: { shop: session.shop },
+  });
+
+  if (!settings) {
+    settings = await prisma.appSetting.create({
+      data: { shop: session.shop }
+    });
+  }
+
+  // 2. If no wholesaleMenuId is saved, create the menu
+  if (!settings.wholesaleMenuId) {
+    try {
+      const response = await admin.graphql(
+        `#graphql
+        mutation CreateMenu($title: String!, $handle: String!, $items: [MenuItemCreateInput!]!) {
+          menuCreate(title: $title, handle: $handle, items: $items) {
+            menu {
+              id
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }`,
+        {
+          variables: {
+            title: "Wholesale Portal",
+            handle: "wholesale-registration",
+            items: [
+              {
+                title: "Wholesale Application",
+                url: "#wholesale-register",
+                type: "HTTP"
+              }
+            ]
+          }
+        }
+      );
+
+      const result = await response.json();
+      
+      if (result.data?.menuCreate?.menu?.id) {
+        // Save the ID in the database so we don't create it again
+        await prisma.appSetting.update({
+          where: { shop: session.shop },
+          data: { wholesaleMenuId: result.data.menuCreate.menu.id }
+        });
+        console.log("Successfully created Wholesale menu:", result.data.menuCreate.menu.id);
+      } else {
+        console.error("Failed to create menu:", result.data?.menuCreate?.userErrors);
+      }
+    } catch (error) {
+      console.error("Error creating wholesale menu:", error);
+    }
+  }
+
+  return null;
+};
 export default function Dashboard() {
   return (
     <s-page heading="Wholesale Engine AI">
@@ -17,6 +83,15 @@ export default function Dashboard() {
             <h2 className="lx-card-title">Customers</h2>
             <p className="lx-card-desc">Assign customers to wholesale groups.</p>
             <span className="lx-card-link">Manage Customers <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </Link>
+
+          <Link to="/app/applications" className="lx-card lx-card-hover-border">
+            <div className="lx-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h2 className="lx-card-title">Applications</h2>
+            <p className="lx-card-desc">Review and approve wholesale applications.</p>
+            <span className="lx-card-link">View Applications <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </Link>
 
           <Link to="/app/settings" className="lx-card lx-card-hover-border">

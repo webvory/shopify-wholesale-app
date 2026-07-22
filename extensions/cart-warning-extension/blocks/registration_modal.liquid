@@ -1,0 +1,224 @@
+<div id="wholesale-registration-modal" class="wholesale-modal-overlay" aria-hidden="true">
+  <div class="wholesale-modal-container" role="dialog" aria-modal="true" aria-labelledby="wholesale-modal-title">
+    <div class="wholesale-modal-header">
+      <h2 id="wholesale-modal-title">{{ 'registration.title' | t }}</h2>
+      <button type="button" class="wholesale-modal-close" aria-label="{{ 'registration.close' | t }}">
+        &times;
+      </button>
+    </div>
+    <div class="wholesale-modal-body">
+      
+      <!-- Step 1: Ask if existing customer -->
+      <div id="wholesale-question-step" class="wholesale-step-container">
+        <div class="wholesale-question-content">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; color: #4b5563;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <h3 class="wholesale-question-title">Are you already a wholesale customer?</h3>
+          <p class="wholesale-question-desc">If you already have an approved wholesale account, please log in. Otherwise, apply for a new account.</p>
+          
+          <div class="wholesale-question-actions">
+            <a href="{{ routes.account_login_url }}" class="wholesale-choice-btn wholesale-login-btn">
+              Yes, Login
+            </a>
+            <button type="button" id="wholesale-show-form-btn" class="wholesale-choice-btn wholesale-apply-btn">
+              No, Apply Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: The Registration Form -->
+      <div id="wholesale-form-step" class="wholesale-step-container" style="display: none;">
+        <form id="wholesale-registration-form" action="/apps/wholesale/register" method="POST" enctype="multipart/form-data" novalidate>
+        
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="firstName">First Name *</label>
+            <input type="text" id="firstName" name="firstName" required>
+            <div class="wholesale-field-error" id="error-firstName"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <div class="wholesale-field-error" id="error-lastName"></div>
+          </div>
+        </div>
+
+        <div class="wholesale-form-group">
+          <label for="email">{{ 'registration.email' | t }} *</label>
+          <input type="email" id="email" name="email" required>
+          <div class="wholesale-field-error" id="error-email"></div>
+        </div>
+
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="businessName">{{ 'registration.businessName' | t }} *</label>
+            <input type="text" id="businessName" name="businessName" required>
+            <div class="wholesale-field-error" id="error-businessName"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="phone">{{ 'registration.phone' | t }} *</label>
+            <input type="tel" id="phone" name="phone" required pattern="^\+[1-9]\d{1,14}$" title="Phone number must include country code (e.g., +1234567890)">
+            <div class="wholesale-field-error" id="error-phone"></div>
+          </div>
+        </div>
+
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="businessType">{{ 'registration.businessType' | t }} *</label>
+            <select id="businessType" name="businessType" required>
+              <option value="">{{ 'registration.selectType' | t }}</option>
+              <option value="Retailer">Retailer</option>
+              <option value="Boutique">Boutique</option>
+              <option value="Distributor">Distributor</option>
+              <option value="Other">Other</option>
+            </select>
+            <div class="wholesale-field-error" id="error-businessType"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="website">{{ 'registration.website' | t }}</label>
+            <input type="url" id="website" name="website" placeholder="https://...">
+            <div class="wholesale-field-error" id="error-website"></div>
+          </div>
+        </div>
+
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="taxId">{{ 'registration.taxId' | t }}</label>
+            <input type="text" id="taxId" name="taxId">
+            <div class="wholesale-field-error" id="error-taxId"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="resaleCertificate">{{ 'registration.resaleCertificate' | t }}</label>
+            <input type="file" id="resaleCertificate" name="resaleCertificate" accept=".pdf,.jpg,.jpeg,.png">
+            <div class="wholesale-field-error" id="error-resaleCertificate"></div>
+          </div>
+        </div>
+
+        <!-- Billing Address -->
+        <div class="wholesale-section-title">Billing Address</div>
+        <div class="wholesale-form-group">
+          <label for="b_address1">Address</label>
+          <input type="text" id="b_address1" name="b_address1" required>
+          <div class="wholesale-field-error" id="error-b_address1"></div>
+        </div>
+        <div class="wholesale-form-group">
+          <label for="b_address2">Apartment, suite, etc.</label>
+          <input type="text" id="b_address2" name="b_address2">
+          <div class="wholesale-field-error" id="error-b_address2"></div>
+        </div>
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="b_city">City</label>
+            <input type="text" id="b_city" name="b_city" required>
+            <div class="wholesale-field-error" id="error-b_city"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="b_state">State / Region</label>
+            <input type="text" id="b_state" name="b_state" required>
+            <div class="wholesale-field-error" id="error-b_state"></div>
+          </div>
+        </div>
+        <div class="wholesale-form-row">
+          <div class="wholesale-form-group">
+            <label for="b_zip">ZIP / Postal Code</label>
+            <input type="text" id="b_zip" name="b_zip" required>
+            <div class="wholesale-field-error" id="error-b_zip"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="b_country">Country</label>
+            <select id="b_country" name="b_country" required>
+              <option value="United States">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Australia">Australia</option>
+              <!-- Can be populated dynamically if needed -->
+            </select>
+            <div class="wholesale-field-error" id="error-b_country"></div>
+          </div>
+        </div>
+
+        <div class="wholesale-form-checkbox">
+          <label>
+            <input type="checkbox" id="sameAsBilling" name="sameAsBilling" checked>
+            Shipping address is the same as billing address
+          </label>
+        </div>
+
+        <!-- Shipping Address (Hidden by default) -->
+        <div id="shipping-address-section" style="display: none; margin-top: 20px;">
+          <div class="wholesale-section-title">Shipping Address</div>
+          <div class="wholesale-form-group">
+            <label for="s_address1">Address</label>
+            <input type="text" id="s_address1" name="s_address1">
+            <div class="wholesale-field-error" id="error-s_address1"></div>
+          </div>
+          <div class="wholesale-form-group">
+            <label for="s_address2">Apartment, suite, etc.</label>
+            <input type="text" id="s_address2" name="s_address2">
+            <div class="wholesale-field-error" id="error-s_address2"></div>
+          </div>
+          <div class="wholesale-form-row">
+            <div class="wholesale-form-group">
+              <label for="s_city">City</label>
+              <input type="text" id="s_city" name="s_city">
+              <div class="wholesale-field-error" id="error-s_city"></div>
+            </div>
+            <div class="wholesale-form-group">
+              <label for="s_state">State / Region</label>
+              <input type="text" id="s_state" name="s_state">
+              <div class="wholesale-field-error" id="error-s_state"></div>
+            </div>
+          </div>
+          <div class="wholesale-form-row">
+            <div class="wholesale-form-group">
+              <label for="s_zip">ZIP / Postal Code</label>
+              <input type="text" id="s_zip" name="s_zip">
+              <div class="wholesale-field-error" id="error-s_zip"></div>
+            </div>
+            <div class="wholesale-form-group">
+              <label for="s_country">Country</label>
+              <select id="s_country" name="s_country">
+                <option value="United States">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Australia">Australia</option>
+              </select>
+              <div class="wholesale-field-error" id="error-s_country"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="wholesale-form-message" class="wholesale-message" hidden></div>
+
+        <div class="wholesale-form-actions">
+          <button type="button" class="wholesale-reset-btn" id="wholesale-reset-btn">
+            Reset
+          </button>
+          <button type="submit" class="wholesale-submit-btn" id="wholesale-submit-btn">
+            {{ 'registration.submit' | t }}
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ 'registration-modal.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'registration-modal.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Wholesale Registration",
+  "target": "body",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Adds a hidden modal to the store. To open it, add a link to your navigation menu with the URL `#wholesale-register`."
+    }
+  ]
+}
+{% endschema %}

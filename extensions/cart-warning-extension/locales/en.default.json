@@ -1,3 +1,19 @@
 {
-  "name": "Cart Warning Extension"
+  "name": "Cart Warning Extension",
+  "registration": {
+    "title": "Wholesale Application",
+    "close": "Close",
+    "businessName": "Business Name",
+    "contactName": "Contact Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "website": "Website",
+    "businessType": "Business Type",
+    "selectType": "Select a type...",
+    "taxId": "Tax ID / EIN",
+    "resaleCertificate": "Resale Certificate (Upload)",
+    "billingAddress": "Billing Address",
+    "shippingAddress": "Shipping Address",
+    "submit": "Submit Application"
+  }
 }

@@ -1,13 +1,9 @@
-name: Build and Push Wholesale App to ECR       
+name: Build, Push and Deploy Wholesale App
 
 on:
   push:
     branches:
       - main
-
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
   build:
@@ -17,7 +13,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
@@ -25,26 +21,30 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-west-1
 
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build Docker Image
         run: |
-          docker build -t $ECR_REPOSITORY:${{ github.sha }} .
+          aws ecr get-login-password --region us-west-1 | \
+          docker login --username AWS --password-stdin \
+          450367038243.dkr.ecr.us-west-1.amazonaws.com
 
-          docker tag $ECR_REPOSITORY:${{ github.sha }} \
-            ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
-
-          docker tag $ECR_REPOSITORY:${{ github.sha }} \
-            ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
-
-      - name: Push Docker Images
+      - name: Build Image
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+          docker build -t shopify-wholesale-app .
+
+      - name: Tag Image
+        run: |
+          docker tag shopify-wholesale-app:latest \
+          450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+
+          docker tag shopify-wholesale-app:latest \
+          450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
+
+      - name: Push Image
+        run: |
+          docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+          docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
 
   deploy:
     needs: build
@@ -58,19 +58,15 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
-            set -ev
-
             cd ~/wholesale-app/shopify-wholesale-app
 
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
-              docker login --username AWS --password-stdin \
-              450367038243.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            aws ecr get-login-password --region us-west-1 | \
+            docker login --username AWS --password-stdin \
+            450367038243.dkr.ecr.us-west-1.amazonaws.com
 
-            echo "=======  DONNNNNN =================="
+            echo "=====   DONNNNNNNNNN ======================"
 
             # docker compose pull wholesale-app
             # docker compose up -d --force-recreate wholesale-app
 
             # docker image prune -af
-
-            # docker ps

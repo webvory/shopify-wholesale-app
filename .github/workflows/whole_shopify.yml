@@ -1,4 +1,4 @@
-name: Build and Push Wholesale App to ECR
+name: Build and Push Wholesale App to ECR       
 
 on:
   push:

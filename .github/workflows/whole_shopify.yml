@@ -59,8 +59,6 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             set -xeov
-            
-            cd ~/wholesale-app/shopify-wholesale-app
 
             aws ecr get-login-password --region us-west-1 | \
             docker login --username AWS --password-stdin \

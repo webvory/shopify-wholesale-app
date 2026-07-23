@@ -58,17 +58,13 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
+            set -xeov
+            
             cd ~/wholesale-app/shopify-wholesale-app
 
             aws ecr get-login-password --region us-west-1 | \
             docker login --username AWS --password-stdin \
-            450367038243.dkr.ecr.us-west-1.amazonaws.com
+                450367038243.dkr.ecr.us-west-1.amazonaws.com
 
-            docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+            docker pull 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
 
-            echo "=====   DONNNNNNNNNN ======================"
-
-            # docker compose pull wholesale-app
-            # docker compose up -d --force-recreate wholesale-app
-
-            # docker image prune -af

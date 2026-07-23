@@ -1,0 +1,89 @@
+name: Build and Push Wholesale App to ECR
+
+
+
+on:
+
+  push:
+
+    branches:
+
+      - main
+
+
+
+env:
+
+  AWS_REGION: us-east-2
+
+  ECR_REPOSITORY: shopify-wholesale-app
+
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+
+
+    permissions:
+
+      contents: read
+
+
+
+    steps:
+
+      - name: Checkout Repository
+
+        uses: actions/checkout@v4
+
+
+
+      - name: Configure AWS Credentials
+
+        uses: aws-actions/configure-aws-credentials@v4
+
+        with:
+
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+          aws-region: ${{ env.AWS_REGION }}
+
+
+
+      - name: Login to Amazon ECR
+
+        id: login-ecr
+
+        uses: aws-actions/amazon-ecr-login@v2
+
+
+
+      - name: Build Docker Image
+
+        run: |
+
+          docker build -t $ECR_REPOSITORY:${{ github.sha }} .
+
+          docker tag $ECR_REPOSITORY:${{ github.sha }} \
+
+            ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
+
+          docker tag $ECR_REPOSITORY:${{ github.sha }} \
+
+            ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
+
+
+
+      - name: Push Docker Images
+
+        run: |
+
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
+
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest

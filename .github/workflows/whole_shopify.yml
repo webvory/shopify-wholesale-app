@@ -64,6 +64,8 @@ jobs:
             docker login --username AWS --password-stdin \
             450367038243.dkr.ecr.us-west-1.amazonaws.com
 
+            docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+
             echo "=====   DONNNNNNNNNN ======================"
 
             # docker compose pull wholesale-app

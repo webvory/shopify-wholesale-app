@@ -1,21 +1,40 @@
+# name: Build, Push and Deploy Wholesale App
 name: Build, Push and Deploy Wholesale App
 
+# on:
+#   push:
+#     branches:
+#       - main
 on:
   push:
     branches:
       - main
 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 jobs:
   build:
     runs-on: ubuntu-latest
 
+#     permissions:
+#       contents: read
     permissions:
       contents: read
 
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: us-west-1
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -23,32 +42,66 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
 
+#       - name: Login to Amazon ECR
+#         run: |
+#           aws ecr get-login-password --region us-west-1 | \
+#           docker login --username AWS --password-stdin \
+#           450367038243.dkr.ecr.us-west-1.amazonaws.com
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region us-west-1 | \
           docker login --username AWS --password-stdin \
           450367038243.dkr.ecr.us-west-1.amazonaws.com
 
+#       - name: Build Image
+#         run: docker build -t shopify-wholesale-app .
       - name: Build Image
         run: docker build -t shopify-wholesale-app .
 
+#       - name: Tag Image
+#         run: |
+#           docker tag shopify-wholesale-app:latest \
+#             450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
       - name: Tag Image
         run: |
           docker tag shopify-wholesale-app:latest \
             450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
 
+#           docker tag shopify-wholesale-app:latest \
+#             450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
           docker tag shopify-wholesale-app:latest \
             450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
 
+#       - name: Push Image
+#         run: |
+#           docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+#           docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
       - name: Push Image
         run: |
           docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
           docker push 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:${{ github.sha }}
 
+#   deploy:
+#     needs: build
+#     runs-on: ubuntu-latest
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
+#     steps:
+#       - name: Deploy to VPS
+#         uses: appleboy/ssh-action@v1.2.2
+#         env:
+#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           AWS_DEFAULT_REGION: us-west-1
+#         with:
+#           host: ${{ secrets.VPS_HOST }}
+#           username: ${{ secrets.VPS_USERNAME }}
+#           password: ${{ secrets.VPS_PASSWORD }}
+#           envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION
+#           script: |
+#             set -euxo pipefail
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.2
@@ -64,25 +117,54 @@ jobs:
           script: |
             set -euxo pipefail
 
+#             export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+#             export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+#             export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
             export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
+#             cd ~/wholesale-app/shopify-wholesale-app
             cd ~/wholesale-app/shopify-wholesale-app
 
+#             aws ecr get-login-password --region us-west-1 | \
+#             docker login --username AWS --password-stdin \
+#             450367038243.dkr.ecr.us-west-1.amazonaws.com
             aws ecr get-login-password --region us-west-1 | \
             docker login --username AWS --password-stdin \
             450367038243.dkr.ecr.us-west-1.amazonaws.com
 
+#             docker pull 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
             docker pull 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
 
+#             # docker compose up -d --force-recreate wholesale-app
+            docker compose up -d --force-recreate wholesale-app
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app:latest || true
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app || true
 
+#             # docker image prune -f
+            docker compose up -d --force-recreate wholesale-app || docker compose up -d --force-recreate
             docker compose stop wholesale-app || docker compose stop || true
             docker compose rm -f wholesale-app || docker compose rm -f || true
             docker compose up -d --force-recreate
+            TARGET_DIR=""
+            if [ -d "$HOME/wholesale-app/shopify-wholesale-app" ]; then
+              TARGET_DIR="$HOME/wholesale-app/shopify-wholesale-app"
+            elif [ -d "$HOME/wholesale-app" ]; then
+              TARGET_DIR="$HOME/wholesale-app"
+            elif [ -d "$HOME/shopify-wholesale-app" ]; then
+              TARGET_DIR="$HOME/shopify-wholesale-app"
+            fi
 
             docker image prune -f
+            if [ -n "$TARGET_DIR" ]; then
+              cd "$TARGET_DIR"
+              git pull origin main || true
+              docker compose down --remove-orphans || true
+              docker compose up -d --force-recreate || docker-compose up -d --force-recreate || true
+            fi
 
+#             # docker ps
             docker ps
+
+            docker image prune -f

@@ -1,5 +1,4 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import "./styles/global.css";
 
 export default function App() {
   return (

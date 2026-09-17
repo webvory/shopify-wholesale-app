@@ -1,0 +1,175 @@
+.page {
+  --ink: #1e302b;
+  --muted: #52645d;
+  --accent: #176348;
+  background: #fff;
+  color: var(--ink);
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100vh;
+  padding: 0 clamp(16px, 5vw, 64px);
+}
+
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: var(--accent);
+  text-underline-offset: 4px;
+}
+
+.page a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.page a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 5px;
+  border-radius: 2px;
+}
+
+.header,
+.footer {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 24px 0;
+}
+
+.header {
+  border-bottom: 1px solid #dce5e0;
+}
+
+.header > span,
+.footer {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.brand {
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.main {
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 64px 0 56px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  margin: 0 0 24px;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 18px;
+  margin: 0;
+}
+
+.updated {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 22px 0 0;
+}
+
+.contents {
+  background: #f4f7f5;
+  border-left: 3px solid var(--accent);
+  margin: 36px 0 48px;
+  padding: 22px 28px;
+}
+
+.contents h2 {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+
+.contents ol {
+  display: grid;
+  gap: 8px 30px;
+  grid-template-columns: 1fr 1fr;
+  font-size: 14px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.contents li::marker {
+  color: var(--muted);
+}
+
+.policy section {
+  margin-top: 36px;
+  scroll-margin-top: 24px;
+}
+
+.policy h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+  margin: 0 0 14px;
+}
+
+.policy p {
+  margin: 0 0 16px;
+}
+
+.policy ul {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.policy li {
+  padding-left: 4px;
+  margin: 12px 0;
+}
+
+.policy strong {
+  font-weight: 600;
+}
+
+.footer {
+  border-top: 1px solid #dce5e0;
+}
+
+@media (max-width: 560px) {
+  .header > span {
+    display: none;
+  }
+
+  .main {
+    padding-top: 40px;
+  }
+
+  .contents {
+    padding: 20px;
+  }
+
+  .contents ol {
+    grid-template-columns: 1fr;
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+}

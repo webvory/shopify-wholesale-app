@@ -13,7 +13,10 @@ export default async function handleRequest(
   responseHeaders,
   reactRouterContext,
 ) {
-  addDocumentResponseHeaders(request, responseHeaders);
+  // Public registration forms are embedded in the merchant's storefront, not the admin.
+  if (!new URL(request.url).pathname.startsWith("/registration/")) {
+    addDocumentResponseHeaders(request, responseHeaders);
+  }
   const userAgent = request.headers.get("user-agent");
   const callbackName = isbot(userAgent ?? "") ? "onAllReady" : "onShellReady";
 

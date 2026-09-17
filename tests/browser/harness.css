@@ -1,0 +1,94 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f3f5f3;
+  color: #202b25;
+  font:
+    14px/1.5 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.harness-header {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #192b21;
+  color: white;
+}
+.harness-header span {
+  font-size: 12px;
+  color: #d0ddd5;
+}
+.harness-header nav {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+}
+.harness-header a {
+  color: #fff;
+}
+.harness-fixtures {
+  display: flex;
+  gap: 14px;
+  padding: 10px 24px;
+  flex-wrap: wrap;
+  background: #fff3d4;
+  font-size: 12px;
+}
+.harness-fixtures a {
+  color: #284c37;
+}
+.harness-main {
+  max-width: 1560px;
+  padding: 22px;
+  margin: auto;
+}
+.harness-public {
+  max-width: 840px;
+  margin: 20px auto;
+  padding: 24px;
+  background: var(--reg-page);
+}
+.harness-fixture-label {
+  font-size: 12px;
+  color: #59695f;
+}
+.harness-submit {
+  margin-top: 16px;
+  min-height: 44px;
+  background: var(--reg-button);
+  color: var(--reg-button-text);
+  border: 0;
+  border-radius: var(--reg-button-radius);
+  padding: 12px 22px;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+}
+.harness-public pre {
+  overflow: auto;
+}
+.harness-public [role="alert"] {
+  color: #a52b2b;
+}
+@media (max-width: 700px) {
+  .harness-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+  .harness-header nav {
+    margin: 0;
+    width: 100%;
+  }
+  .harness-main {
+    padding: 10px;
+  }
+  .harness-public {
+    padding: 0;
+  }
+}

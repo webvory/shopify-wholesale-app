@@ -9,8 +9,8 @@ generator client {
 // enough when changing adapters.
 // See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
 }
 
 model Session {
@@ -50,42 +50,105 @@ model WholesaleDiscount {
   createdAt DateTime @default(now())
 }
 
-model QuantityLimit {
-  id        Int      @id @default(autoincrement())
-  shop      String
-  tag       String   
-  limit     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model RegistrationPage {
+  id                String   @id @default(cuid())
+  shop              String
+  name              String
+  handle            String
+  status            String   @default("draft")
+  configuration     Json
+  styling           Json
+  settings          Json
+  publishedSnapshot Json?
+  publishedHandle   String?
+  revision          Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  publishedAt       DateTime?
+  applications      WholesaleApplication[]
 
-  @@unique([shop, tag])
-}
-
-model AppSetting {
-  id                    Int      @id @default(autoincrement())
-  shop                  String   @unique
-  newCustomerMessage    String?
-  taggedCustomerMessage String?
-  wholesaleMenuId       String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  @@unique([shop, handle])
+  @@unique([shop, publishedHandle])
+  @@index([shop, updatedAt])
 }
 
 model WholesaleApplication {
-  id                String   @id @default(cuid())
-  shop              String
-  businessName      String
-  contactName       String
-  email             String
-  phone             String
-  website           String?
-  businessType      String
-  taxId             String?
-  resaleCertUrl     String?
-  billingAddress    String?
-  shippingAddress   String?
-  status            String   @default("Pending") // Pending, Approved, Rejected, Under Review
-  notes             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-}
+  id                    String   @id @default(cuid())
+  shop                  String
+  registrationPageId    String?
+  page                  RegistrationPage? @relation(fields: [registrationPageId], references: [id], onDelete: SetNull)
+  pageName              String
+  status                String   @default("pending")
+  submittedData         Json
+  configurationSnapshot Json
+  settingsSnapshot      Json
+  companyName           String   @default("")
+  applicantName         String   @default("")
+  email                 String   @default("")
+  country               String   @default("")
+  customerId            String?
+  companyId             String?
+  companyLocationId     String?
+  companyContactId      String?
+  adminNote             String   @default("")
+  integrationError      String?
+  integrationState      Json     @default("{}")
+  processingAt          DateTime?
+  version               Int      @default(1)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  files                 ApplicationFile[]
+  notifications         EmailNotification[]
+
+  @@index([shop, status, createdAt])
+  @@index([shop, email])
+}
+
+model ApplicationFile {
+  id            String @id @default(cuid())
+  shop          String
+  applicationId String
+  application   WholesaleApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fieldId       String
+  filename      String
+  mimeType      String
+  size          Int
+  data          Bytes
+
+  @@index([shop, applicationId])
+}
+
+model SubmissionNonce {
+  id        String @id
+  shop      String
+  pageId    String
+  expiresAt DateTime
+
+  @@index([shop, expiresAt])
+}
+
+model SubmissionRate {
+  id          String @id
+  shop        String
+  windowStart DateTime
+  count       Int @default(1)
+
+  @@index([shop, windowStart])
+}
+
+model EmailNotification {
+  id            String @id @default(cuid())
+  shop          String
+  applicationId String
+  application   WholesaleApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  event         String
+  recipient     String
+  subject       String
+  body          String
+  status        String @default("pending")
+  error         String?
+  createdAt     DateTime @default(now())
+  sentAt        DateTime?
+
+  @@index([shop, applicationId])
+}

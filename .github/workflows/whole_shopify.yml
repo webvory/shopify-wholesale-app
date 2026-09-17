@@ -76,22 +76,37 @@ jobs:
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app:latest || true
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app || true
 
-            TARGET_DIR=""
-            if [ -d "$HOME/wholesale-app/shopify-wholesale-app" ]; then
-              TARGET_DIR="$HOME/wholesale-app/shopify-wholesale-app"
-            elif [ -d "$HOME/wholesale-app" ]; then
-              TARGET_DIR="$HOME/wholesale-app"
-            elif [ -d "$HOME/shopify-wholesale-app" ]; then
-              TARGET_DIR="$HOME/shopify-wholesale-app"
+            echo "=== Finding and updating docker compose directory ==="
+            COMPOSE_DIR=""
+            if [ -f "$HOME/wholesale-app/shopify-wholesale-app/docker-compose.yml" ] || [ -f "$HOME/wholesale-app/shopify-wholesale-app/docker-compose.yaml" ]; then
+              COMPOSE_DIR="$HOME/wholesale-app/shopify-wholesale-app"
+            elif [ -f "$HOME/wholesale-app/docker-compose.yml" ] || [ -f "$HOME/wholesale-app/docker-compose.yaml" ]; then
+              COMPOSE_DIR="$HOME/wholesale-app"
+            elif [ -f "$HOME/shopify-wholesale-app/docker-compose.yml" ] || [ -f "$HOME/shopify-wholesale-app/docker-compose.yaml" ]; then
+              COMPOSE_DIR="$HOME/shopify-wholesale-app"
+            else
+              FOUND=$(find "$HOME" /var/www -maxdepth 4 -name "docker-compose.y*ml" 2>/dev/null | head -n 1 || true)
+              if [ -n "$FOUND" ]; then
+                COMPOSE_DIR=$(dirname "$FOUND")
+              fi
             fi
 
-            if [ -n "$TARGET_DIR" ]; then
-              cd "$TARGET_DIR"
+            if [ -n "$COMPOSE_DIR" ]; then
+              echo "Found compose in $COMPOSE_DIR"
+              cd "$COMPOSE_DIR"
               git pull origin main || true
               docker compose down --remove-orphans || docker-compose down --remove-orphans || true
               docker compose up -d --force-recreate || docker-compose up -d --force-recreate || true
             fi
 
+            # Force stop and remove any old containers on port 3000 if not handled
+            OLD_CONTAINERS=$(docker ps -q --filter "publish=3000" || true)
+            if [ -z "$OLD_CONTAINERS" ] && [ -z "$COMPOSE_DIR" ]; then
+              echo "Starting standalone container..."
+              docker run -d -p 3000:3000 --restart always --name wholesale-app 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest
+            fi
+
+            echo "=== Active Containers ==="
             docker ps
 
             docker image prune -f

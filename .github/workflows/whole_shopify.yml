@@ -79,7 +79,9 @@ jobs:
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app:latest || true
             docker tag 450367038243.dkr.ecr.us-west-1.amazonaws.com/shopify-wholesale-app:latest shopify-wholesale-app || true
 
-            docker compose up -d --force-recreate wholesale-app || docker compose up -d --force-recreate
+            docker compose stop wholesale-app || docker compose stop || true
+            docker compose rm -f wholesale-app || docker compose rm -f || true
+            docker compose up -d --force-recreate
 
             docker image prune -f
 

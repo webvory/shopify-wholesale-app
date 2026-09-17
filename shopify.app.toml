@@ -2,7 +2,7 @@
 
 client_id = "1df52932fce3b08b960ab66ca4ccd8c9"
 name = "Wholesale Engine AI"
-application_url = "https://unlarcenous-immunogenic-zada.ngrok-free.dev"
+application_url = "https://wholesale.webvory.com"
 embedded = true
 handle = "ai-wholesale-engine"
 
@@ -26,13 +26,13 @@ scopes = "write_app_proxy,read_customers,read_discounts,read_markets,read_metaob
 optional_scopes = [ ]
 
 [app_proxy]
-url = "/proxy/registration"
+url = "https://wholesale.webvory.com/proxy/registration"
 subpath = "wholesale"
 prefix = "apps"
 
 [auth]
 redirect_urls = [
-  "https://unlarcenous-immunogenic-zada.ngrok-free.dev/api/auth/callback"
+  "https://wholesale.webvory.com/api/auth/callback"
 ]
 
 [product.metafields.app.demo_info]

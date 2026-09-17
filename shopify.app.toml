@@ -4,7 +4,6 @@ client_id = "1df52932fce3b08b960ab66ca4ccd8c9"
 name = "Wholesale Engine AI"
 application_url = "https://unlarcenous-immunogenic-zada.ngrok-free.dev"
 embedded = true
-handle = "product-customizer-23"
 handle = "ai-wholesale-engine"
 
 [build]
